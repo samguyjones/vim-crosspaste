@@ -1,7 +1,6 @@
-
-" Title: CrossPaste Plugin
+" Title: vim-crosspaste plugin
 " Description: Works with Vimux to paste text across vimux panes
-" Last Change: 20 May 2022
+" Last Change: 13 June 2022
 " Maintainer: Sam Jones <sjones6@paypal.com>
 
 if exists("g:CrossPasteLoaded")
