@@ -15,6 +15,12 @@ else
     call VimuxRunCommand(@q)
   endfunction
 
+  function! CrossPasteBlock()
+    yank q
+    let @q = AllValues(@q)
+    call VimuxRunCommand(@q)
+  endfunction
+
   function! SwitchMatch(input)
     let l:start = match(a:input, "\$\{[^}]*\}")
     let l:end = matchend(a:input, "^[^\$]*\$\{[^}]*\}")
