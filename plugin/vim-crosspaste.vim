@@ -37,7 +37,28 @@ else
     return l:process
   endfunction
 
+  function! RememberRegister(name, value, entered)
+    let g:CrossPasteList[a:name] = a:value
+    call add(a:entered, a:name)
+  endfunction
+
+  function! FileReadValue(userinput, enteredvalue)
+    let l:filecontents = readfile(a:enteredvalue)
+    if match(a:userinput, "fs:") == 0
+      let l:filecontents = map(l:filecontents, '"''" . v:val . "''"')
+    endif
+    return join(l:filecontents, ",")
+  endfunction
+
   function! UserValue(userinput, entered)
+    let l:enteredvalue = EnteredValue(a:userinput, a:entered)
+    if match(a:userinput,"^f[sn]:") >= 0
+      let l:enteredvalue=FileReadValue(a:userinput, l:enteredvalue)
+    endif
+    return l:enteredvalue
+  endfunction
+
+  function! EnteredValue(userinput, entered)
     let l:default = ''
     if has_key(g:CrossPasteList, a:userinput)
       let l:default = g:CrossPasteList[a:userinput]
@@ -48,6 +69,7 @@ else
     call inputsave()
     let l:uservalue = input('Enter ' . a:userinput . ': ', l:default)
     call inputrestore()
+    call RememberRegister(a:userinput, l:uservalue, a:entered)
     let g:CrossPasteList[a:userinput] = l:uservalue
     call add(a:entered, a:userinput)
     return l:uservalue
