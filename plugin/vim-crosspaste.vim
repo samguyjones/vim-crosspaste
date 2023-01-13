@@ -11,28 +11,34 @@ else
 
   function! CrossPaste()
     ?^$?;/;/yank q
-    let @q = AllValues(@q)
+    let @q = AllValues(@q, 0)
     call VimuxRunCommand(@q)
   endfunction
 
   function! CrossPasteBlock()
     yank q
-    let @q = AllValues(@q)
+    let @q = AllValues(@q, 0)
     call VimuxRunCommand(@q)
   endfunction
 
-  function! SwitchMatch(input, entered)
+  function! CrossPasteQuick()
+    ?^$?;/;/yank q
+    let @q = AllValues(@q, 1)
+    call VimuxRunCommand(@q)
+  endfunction
+
+  function! SwitchMatch(input, entered, takeDefault)
     let l:start = match(a:input, "\$\{[^}]*\}")
     let l:end = matchend(a:input, "^[^\$]*\$\{[^}]*\}")
     let l:variable = strpart(a:input, l:start+2, l:end - l:start - 3)
-    return strpart(a:input, 0, l:start) . UserValue(variable, a:entered) . strpart(a:input, l:end)
+    return strpart(a:input, 0, l:start) . UserValue(variable, a:entered, a:takeDefault) . strpart(a:input, l:end)
   endfunction
 
-  function! AllValues(input)
+  function! AllValues(input, takeDefault)
     let l:process = a:input
     let l:entered = []
     while match(l:process, "\$\{[^}]*\}") >= 0
-      let l:process = SwitchMatch(l:process, l:entered)
+      let l:process = SwitchMatch(l:process, l:entered, a:takeDefault)
     endwhile
     return l:process
   endfunction
@@ -50,19 +56,19 @@ else
     return join(l:filecontents, ",")
   endfunction
 
-  function! UserValue(userinput, entered)
-    let l:enteredvalue = EnteredValue(a:userinput, a:entered)
+  function! UserValue(userinput, entered, takeDefault)
+    let l:enteredvalue = EnteredValue(a:userinput, a:entered, a:takeDefault)
     if match(a:userinput,"^f[sn]:") >= 0
       let l:enteredvalue=FileReadValue(a:userinput, l:enteredvalue)
     endif
     return l:enteredvalue
   endfunction
 
-  function! EnteredValue(userinput, entered)
+  function! EnteredValue(userinput, entered, takeDefault)
     let l:default = ''
     if has_key(g:CrossPasteList, a:userinput)
       let l:default = g:CrossPasteList[a:userinput]
-      if index(a:entered, a:userinput) > -1
+      if index(a:entered, a:userinput) > -1 || a:takeDefault
         return l:default
       endif
     endif
