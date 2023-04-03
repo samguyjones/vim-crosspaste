@@ -21,7 +21,7 @@ will get pasted across to the nearest TMUX pane.
 
 You can get this plugin by adding this to your .vimrc.bundles.local
 ```
-Plug 'git@github.braintreeps.com:sjones6/CrossPaste.git'
+Plug 'https://github.com/samguyjones/vim-crosspaste.git'
 ```
 
 I add this to my .vimrc_local to let me paste code with the shortcut \qp
